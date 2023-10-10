@@ -3,11 +3,13 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"fmt"
 	"image"
 	"image/png"
 	"log"
 	"os"
 	"path"
+	"sort"
 	"strings"
 
 	"github.com/srwiley/oksvg"
@@ -75,14 +77,17 @@ func (s *Sprite) GetName() string {
 	return strings.TrimSuffix(path.Base(*s.FilePath), path.Ext(*s.FilePath))
 }
 
-func NewSprite(filePath string) (*Sprite, error) {
+func NewSprite(filePath string, ratio float64) (*Sprite, error) {
 	icon, _ := oksvg.ReadIcon(filePath)
+	//if ratio > 1 {
+	//	icon.Transform = icon.Transform.Scale(ratio, ratio)
+	//}
 	return &Sprite{
-		W:          int(icon.ViewBox.W),
-		H:          int(icon.ViewBox.H),
+		W:          int(icon.ViewBox.W * ratio),
+		H:          int(icon.ViewBox.H * ratio),
 		X:          0,
 		Y:          0,
-		PixelRatio: 1,
+		PixelRatio: ratio,
 		FilePath:   &filePath,
 		Icon:       icon,
 	}, nil
@@ -129,52 +134,64 @@ func SaveJsonSpriteMap(filePath string, sprites Sprites) error {
 
 func main() {
 	// Arguments
-	spriteFile := "sprites.png"
-	spriteMap := "sprites.json"
+	name := "sprites"
 	svgFiles := os.Args[1:]
 
-	var sprites Sprites
-	for _, svgFile := range svgFiles {
-		newSprite, err := NewSprite(svgFile)
-		if err != nil {
-			log.Fatalf("Failed to Open file %s: %v", svgFile, err)
+	for _, ratio := range []int{1, 2, 3} {
+		var sprites Sprites
+		for _, svgFile := range svgFiles {
+			newSprite, err := NewSprite(svgFile, float64(ratio))
+			if err != nil {
+				log.Fatalf("Failed to Open file %s: %v", svgFile, err)
+			}
+
+			sprites = append(sprites, newSprite)
 		}
 
-		sprites = append(sprites, newSprite)
-	}
+		// Layouts
+		sort.Slice(sprites, func(i, j int) bool {
+			return sprites[i].H > sprites[j].H
+		})
 
-	// Layouts
-	// TODO: Bin Packing
-	w := sprites.GetMaxWidth()
-	h := sprites.GetSumHeight()
-	offsetY := 0
-	for _, sprite := range sprites {
-		sprite.Y = offsetY
-		offsetY += sprite.H
+		// TODO: Bin Packing
+		w := sprites.GetMaxWidth()
+		h := sprites.GetSumHeight()
+		offsetY := 0
+		for _, sprite := range sprites {
+			sprite.Y = offsetY
+			offsetY += sprite.H
 
-		log.Printf("%s, x=%d, y=%d\n", sprite.GetName(), sprite.X, sprite.Y)
-	}
-	log.Printf("MaxWidth=%d, TotalHeight=%d\n", w, h)
+			log.Printf("%s, x=%d, y=%d\n", sprite.GetName(), sprite.X, sprite.Y)
+		}
+		log.Printf("Ratio=%d, MaxWidth=%d, TotalHeight=%d\n", ratio, w, h)
 
-	// Combine images
-	img := image.NewRGBA(image.Rect(0, 0, w, h))
-	scannerGV := rasterx.NewScannerGV(w, h, img, img.Bounds())
-	dasher := rasterx.NewDasher(w, h, scannerGV)
+		// Combine images
+		img := image.NewRGBA(image.Rect(0, 0, w, h))
+		scannerGV := rasterx.NewScannerGV(w, h, img, img.Bounds())
+		dasher := rasterx.NewDasher(w, h, scannerGV)
 
-	for _, sprite := range sprites {
-		sprite.Icon.Transform = rasterx.Identity.Translate(float64(sprite.X), float64(sprite.Y))
-		sprite.Icon.Draw(dasher, 1.0)
-	}
+		for _, sprite := range sprites {
+			sprite.Icon.Transform = rasterx.Identity.Translate(float64(sprite.X), float64(sprite.Y)).Scale(float64(ratio), float64(ratio))
+			sprite.Icon.Draw(dasher, 1.0)
+		}
 
-	// Save sprite image
-	err := SaveToPNG(spriteFile, img)
-	if err != nil {
-		log.Fatalf("Failed to save SpriteImage %s: %v", spriteFile, err)
-	}
+		spriteFile := fmt.Sprintf("%s.png", name)
+		spriteMap := fmt.Sprintf("%s.json", name)
+		if ratio > 1 {
+			spriteFile = fmt.Sprintf("%s@%dx.png", name, ratio)
+			spriteMap = fmt.Sprintf("%s@%dx.json", name, ratio)
+		}
 
-	// Save sprite map
-	err = SaveJsonSpriteMap(spriteMap, sprites)
-	if err != nil {
-		log.Fatalf("Failed to save SpriteMap %s: %v", spriteMap, err)
+		// Save sprite image
+		err := SaveToPNG(spriteFile, img)
+		if err != nil {
+			log.Fatalf("Failed to save SpriteImage %s: %v", spriteFile, err)
+		}
+
+		// Save sprite map
+		err = SaveJsonSpriteMap(spriteMap, sprites)
+		if err != nil {
+			log.Fatalf("Failed to save SpriteMap %s: %v", spriteMap, err)
+		}
 	}
 }
