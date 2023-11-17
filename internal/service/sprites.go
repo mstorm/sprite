@@ -100,8 +100,8 @@ func (s *Sprites) Scale(ratio int) Sprites {
 		newSprite := &Sprite{
 			W:          sprite.W * ratio,
 			H:          sprite.H * ratio,
-			X:          sprite.X,
-			Y:          sprite.Y,
+			X:          sprite.X * ratio,
+			Y:          sprite.Y * ratio,
 			PixelRatio: float64(ratio),
 			FilePath:   sprite.FilePath,
 			Bytes:      sprite.Bytes,
