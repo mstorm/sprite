@@ -11,7 +11,7 @@ func TestConvert(t *testing.T) {
 	inputFile := "testdata/dot.svg"
 	outputFile := "testdata/dot.png"
 
-	_, err := convert(inputFile, outputFile, 10)
+	_, err := Convert(inputFile, outputFile, 10)
 
 	assert.NoError(t, err)
 	assert.FileExists(t, outputFile)
