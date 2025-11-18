@@ -1,0 +1,10 @@
+# Binaries
+/sprite
+
+# Generated sprite outputs
+*.svg
+*.png
+*.json
+
+# Exclude testdata
+!testdata/**
