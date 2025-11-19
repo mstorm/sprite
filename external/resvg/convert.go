@@ -10,6 +10,6 @@ const (
 )
 
 func Convert(src, output string, ratio float64) ([]byte, error) {
-	args := []string{src, output, fmt.Sprintf("--zoom=%f", ratio)}
+	args := []string{"-z", fmt.Sprintf("%f", ratio), src, output}
 	return exec.Command(Resvg, args...).CombinedOutput()
 }
