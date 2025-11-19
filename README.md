@@ -1,35 +1,36 @@
 # sprite
 
-SVG 파일들을 하나의 sprite sheet로 합쳐주는 도구입니다.
+A tool for combining multiple SVG files into a single sprite sheet.
 
 ## Features
 
-- 여러 SVG 파일을 하나의 sprite sheet로 결합
-- 1x, 2x, 3x 해상도 PNG 파일 자동 생성
-- JSON 맵 파일 생성 (각 sprite의 위치와 크기 정보)
-- resvg 기반의 고품질 SVG → PNG 변환
+- Combine multiple SVG files into one sprite sheet
+- Automatically generate 1x, 2x, and 3x resolution PNG files
+- Generate JSON map files with position and size information for each sprite
+- High-quality SVG → PNG conversion using resvg
+- Efficient bin packing using Shelf First Fit Decreasing Height (FFDH) algorithm
 
 ## Prerequisites
 
-### resvg 설치
+### Installing resvg
 
-이 프로젝트는 SVG를 PNG로 변환하기 위해 [resvg](https://github.com/RazrFalcon/resvg)를 사용합니다.
+This project uses [resvg](https://github.com/RazrFalcon/resvg) to convert SVG files to PNG.
 
-#### Option 1: Cargo로 설치 (권장)
+#### Option 1: Install via Cargo (Recommended)
 
 ```bash
-# Rust가 설치되어 있지 않다면
+# If Rust is not installed
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
-# resvg 설치
+# Install resvg
 cargo install resvg
 ```
 
-#### Option 2: 사전 빌드된 바이너리 다운로드
+#### Option 2: Download Pre-built Binary
 
-[resvg releases](https://github.com/RazrFalcon/resvg/releases) 페이지에서 운영체제에 맞는 바이너리를 다운로드하고 PATH에 추가하세요.
+Download the appropriate binary for your operating system from the [resvg releases](https://github.com/RazrFalcon/resvg/releases) page and add it to your PATH.
 
-#### Option 3: Makefile 사용
+#### Option 3: Use Makefile
 
 ```bash
 make install-deps
@@ -38,10 +39,10 @@ make install-deps
 ## Installation
 
 ```bash
-# 의존성 설치 및 빌드
+# Install dependencies and build
 make all
 
-# 또는 수동으로
+# Or manually
 go build -o sprite .
 ```
 
@@ -54,17 +55,17 @@ go build -o sprite .
 ### Example
 
 ```bash
-./sprite testdata/dot.svg testdata/restaurant.svg testdata/mountain.svg testdata/airport.svg
+./sprite testdata/*.svg
 ```
 
-생성되는 파일:
-- `sprites.svg` - 결합된 SVG 파일
+Generated files:
+- `sprites.svg` - Combined SVG file
 - `sprites.png` - 1x PNG sprite sheet
 - `sprites@2x.png` - 2x PNG sprite sheet
 - `sprites@3x.png` - 3x PNG sprite sheet
-- `sprites.json` - 1x sprite 맵
-- `sprites@2x.json` - 2x sprite 맵
-- `sprites@3x.json` - 3x sprite 맵
+- `sprites.json` - 1x sprite map
+- `sprites@2x.json` - 2x sprite map
+- `sprites@3x.json` - 3x sprite map
 
 ## Development
 
