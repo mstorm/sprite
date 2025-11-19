@@ -1,0 +1,7 @@
+# Binary
+sprite
+
+# Generated sprite files
+sprites.svg
+sprites*.png
+sprites*.json

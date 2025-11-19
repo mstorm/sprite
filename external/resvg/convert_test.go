@@ -1,4 +1,4 @@
-package inkscape
+package resvg
 
 import (
 	"os"
@@ -8,8 +8,8 @@ import (
 )
 
 func TestConvert(t *testing.T) {
-	inputFile := "testdata/dot.svg"
-	outputFile := "testdata/dot.png"
+	inputFile := "../../testdata/dot.svg"
+	outputFile := "/tmp/dot_test.png"
 
 	_, err := Convert(inputFile, outputFile, 10)
 
