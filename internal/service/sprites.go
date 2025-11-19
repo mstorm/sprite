@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/mstorm/sprite/external/inkscape"
+	"github.com/mstorm/sprite/external/resvg"
 )
 
 const (
@@ -135,7 +135,7 @@ func (s *Sprites) ExportMap(name string, ratio int) error {
 func (s *Sprites) ConvertPNG(name string, ratio int) error {
 	filename := getFilename(name, ratio, FileExtPNG)
 
-	if _, err := inkscape.Convert(s.GetSvgFileName(name), filename, float64(ratio)); err != nil {
+	if _, err := resvg.Convert(s.GetSvgFileName(name), filename, float64(ratio)); err != nil {
 		return err
 	}
 
