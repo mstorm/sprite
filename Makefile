@@ -37,6 +37,6 @@ clean:
 	rm -f sprites*.png sprites*.json sprites.svg
 
 run: build
-	./sprite testdata/dot.svg testdata/restaurant.svg testdata/mountain.svg testdata/airport.svg
+	./sprite $(wildcard testdata/*.svg)
 
 all: install-deps build test
